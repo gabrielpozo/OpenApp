@@ -1,7 +1,8 @@
-package com.gabrielpozo.openapi
+package com.gabrielpozo.openapp.auth
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.gabrielpozo.openapi.R
 
 class AuthActivity : AppCompatActivity(){
 
