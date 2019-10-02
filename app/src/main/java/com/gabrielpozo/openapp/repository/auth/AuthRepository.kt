@@ -5,8 +5,8 @@ import com.gabrielpozo.openapp.persistence.AccountPropertiesDao
 import com.gabrielpozo.openapp.persistence.AuthTokenDao
 import com.gabrielpozo.openapp.session.SessionManager
 
-class AuthRepository(authTokenDao: AuthTokenDao,
-                     accountPropertiesDao: AccountPropertiesDao,
-                     openApiAuthService: OpenApiAuthService,
-                     sessionManager: SessionManager) {
+class AuthRepository(val authTokenDao: AuthTokenDao,
+                     val accountPropertiesDao: AccountPropertiesDao,
+                     val openApiAuthService: OpenApiAuthService,
+                     val sessionManager: SessionManager) {
 }
