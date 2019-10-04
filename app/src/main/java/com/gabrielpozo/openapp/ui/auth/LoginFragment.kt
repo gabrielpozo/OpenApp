@@ -9,9 +9,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import com.gabrielpozo.openapi.R
+import com.gabrielpozo.openapp.ui.auth.state.LoginFields
 import com.gabrielpozo.openapp.util.ApiEmptyResponse
 import com.gabrielpozo.openapp.util.ApiErrorResponse
 import com.gabrielpozo.openapp.util.ApiSuccessResponse
+import kotlinx.android.synthetic.main.fragment_login.*
 
 
 class LoginFragment : BaseAuthFragment() {
@@ -26,26 +28,28 @@ class LoginFragment : BaseAuthFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         Log.d("Gabriel", "Forgot Password Fragment ${viewModel.hashCode()}")
 
-        viewModel.testLogin().observe(viewLifecycleOwner, Observer { response ->
-            when (response) {
-                is ApiSuccessResponse -> {
+        subscribeObservers()
 
-                    Log.d("Gabriel", "Login Response successful ${response.body}")
-                }
+    }
 
-                is ApiErrorResponse -> {
-                    Log.d("Gabriel", "Login Response Error ${response.errorMessage}")
-
-                }
-
-                is ApiEmptyResponse -> {
-                    Log.d("Gabriel", "Login Response Empty")
-                }
+    private fun subscribeObservers() {
+        viewModel.viewState.observe(viewLifecycleOwner, Observer { authViewState ->
+            authViewState.loginFields?.let { loginFields ->
+                loginFields.login_email?.let { input_email.setText(it) }
+                loginFields.login_password?.let { input_password.setText(it) }
             }
-
         })
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        viewModel.setLoginFields(
+            LoginFields(
+                input_email.text.toString(),
+                input_password.text.toString()
+            )
+        )
     }
 }
