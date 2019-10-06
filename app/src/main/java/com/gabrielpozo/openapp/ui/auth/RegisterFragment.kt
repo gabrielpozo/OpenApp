@@ -8,9 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import com.gabrielpozo.openapi.R
+import com.gabrielpozo.openapp.ui.auth.state.AuthStateEvent
 import com.gabrielpozo.openapp.ui.auth.state.RegistrationFields
-import kotlinx.android.synthetic.main.fragment_login.input_email
-import kotlinx.android.synthetic.main.fragment_login.input_password
 import kotlinx.android.synthetic.main.fragment_register.*
 
 
@@ -27,9 +26,11 @@ class RegisterFragment : BaseAuthFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d("Gabriel", "Forgot Password Fragment ${viewModel.hashCode()}")
+        register_button.setOnClickListener {
+            register()
+        }
         subscribeObservers()
     }
-
 
     private fun subscribeObservers() {
         viewModel.viewState.observe(viewLifecycleOwner, Observer { authViewState ->
@@ -42,6 +43,17 @@ class RegisterFragment : BaseAuthFragment() {
                 }
             }
         })
+    }
+
+    fun register() {
+        viewModel.setStateEvent(
+            AuthStateEvent.RegisterAttemptStateEvent(
+                input_email.text.toString(),
+                input_username.text.toString(),
+                input_password.text.toString(),
+                input_password_confirm.text.toString()
+            )
+        )
     }
 
     override fun onDestroyView() {

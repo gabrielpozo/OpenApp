@@ -3,17 +3,13 @@ package com.gabrielpozo.openapp.ui.auth
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import com.gabrielpozo.openapi.R
-import com.gabrielpozo.openapp.models.AuthToken
+import com.gabrielpozo.openapp.ui.auth.state.AuthStateEvent
 import com.gabrielpozo.openapp.ui.auth.state.LoginFields
-import com.gabrielpozo.openapp.util.ApiEmptyResponse
-import com.gabrielpozo.openapp.util.ApiErrorResponse
-import com.gabrielpozo.openapp.util.ApiSuccessResponse
 import kotlinx.android.synthetic.main.fragment_login.*
 
 
@@ -32,6 +28,10 @@ class LoginFragment : BaseAuthFragment() {
         Log.d("Gabriel", "Forgot Password Fragment ${viewModel.hashCode()}")
 
         subscribeObservers()
+
+        login_button.setOnClickListener {
+            login()
+        }
     }
 
     private fun subscribeObservers() {
@@ -41,6 +41,15 @@ class LoginFragment : BaseAuthFragment() {
                 loginFields.login_password?.let { input_password.setText(it) }
             }
         })
+    }
+
+    fun login() {
+        viewModel.setStateEvent(
+            AuthStateEvent.LoginAttemptStateEvent(
+                input_email.text.toString(),
+                input_password.text.toString()
+            )
+        )
     }
 
     override fun onDestroyView() {

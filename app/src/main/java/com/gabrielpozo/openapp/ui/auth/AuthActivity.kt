@@ -3,11 +3,11 @@ package com.gabrielpozo.openapp.ui.auth
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.gabrielpozo.openapi.R
 import com.gabrielpozo.openapp.ui.BaseActivity
+import com.gabrielpozo.openapp.ui.ResponseType
 import com.gabrielpozo.openapp.ui.main.MainActivity
 import com.gabrielpozo.openapp.viewmodels.ViewModelProviderFactory
 import javax.inject.Inject
@@ -19,7 +19,6 @@ class AuthActivity : BaseActivity() {
 
     lateinit var viewModel: AuthViewModel
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_auth)
@@ -29,6 +28,38 @@ class AuthActivity : BaseActivity() {
     }
 
     private fun subscribeObservers() {
+        viewModel.dataState.observe(this, Observer { dataState ->
+            dataState.dataState?.let { data ->
+                data.data?.let { event ->
+                    event.getContentIfNotHandled()?.let { authViewState ->
+                        authViewState.authToken?.let { authToken ->
+                            Log.d("Gabriel", "AuthActivity, DataState: $authToken ")
+                            viewModel.setAuthToken(authToken)
+                        }
+                    }
+                }
+
+                data.response?.let { event ->
+                    event.getContentIfNotHandled()?.let { response ->
+                        when (response.responseType) {
+                            is ResponseType.Dialog -> {
+                                //inflate errorDialog
+                            }
+
+                            is ResponseType.Toast -> {
+                                //showToast
+
+                            }
+
+                            is ResponseType.None -> {
+
+                            }
+                        }
+                    }
+                }
+            }
+        })
+
         viewModel.viewState.observe(this, Observer { viewState ->
             viewState.authToken?.let { authToken ->
                 sessionManager.login(authToken)
