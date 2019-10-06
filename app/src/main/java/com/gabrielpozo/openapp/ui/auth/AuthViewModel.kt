@@ -26,7 +26,6 @@ class AuthViewModel @Inject constructor(val authRepository: AuthRepository) :
             is LoginAttemptStateEvent -> {
                 AbsentLiveData.create()
             }
-
             is RegisterAttemptStateEvent -> {
                 AbsentLiveData.create()
             }

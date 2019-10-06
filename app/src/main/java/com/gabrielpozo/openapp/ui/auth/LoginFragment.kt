@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import com.gabrielpozo.openapi.R
+import com.gabrielpozo.openapp.models.AuthToken
 import com.gabrielpozo.openapp.ui.auth.state.LoginFields
 import com.gabrielpozo.openapp.util.ApiEmptyResponse
 import com.gabrielpozo.openapp.util.ApiErrorResponse
@@ -31,7 +32,6 @@ class LoginFragment : BaseAuthFragment() {
         Log.d("Gabriel", "Forgot Password Fragment ${viewModel.hashCode()}")
 
         subscribeObservers()
-
     }
 
     private fun subscribeObservers() {

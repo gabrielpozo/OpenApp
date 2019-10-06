@@ -2,7 +2,6 @@ package com.gabrielpozo.openapp.di
 
 import android.app.Application
 import com.gabrielpozo.openapp.BaseApplication
-import com.gabrielpozo.openapp.di.auth.ActivityBuildersModule
 import com.gabrielpozo.openapp.session.SessionManager
 import dagger.BindsInstance
 import dagger.Component
