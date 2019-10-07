@@ -38,7 +38,6 @@ class AuthViewModel @Inject constructor(val authRepository: AuthRepository) :
                 AbsentLiveData.create()
             }
         }
-
     }
 
     fun setRegistrationFields(registrationFields: RegistrationFields) {
@@ -68,4 +67,12 @@ class AuthViewModel @Inject constructor(val authRepository: AuthRepository) :
         _viewState.value = update
     }
 
+    fun cancelActiveJobs() {
+        authRepository.cancelActiveJobs()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        cancelActiveJobs()
+    }
 }

@@ -58,7 +58,6 @@ data class LoginFields(
             fun none(): String {
                 return "None"
             }
-
         }
     }
 

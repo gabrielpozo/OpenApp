@@ -17,7 +17,7 @@ data class DataState<T>(
             )
         }
 
-        fun <T> dataState(data: T?, response: Response?): DataState<T> {
+        fun <T> dataState(data: T?, response: Response? = null): DataState<T> {
             return DataState(
                 dataState = Data(
                     data = Event.dataEvent(data),
