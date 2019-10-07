@@ -45,7 +45,7 @@ class RegisterFragment : BaseAuthFragment() {
         })
     }
 
-    fun register() {
+    private fun register() {
         viewModel.setStateEvent(
             AuthStateEvent.RegisterAttemptStateEvent(
                 input_email.text.toString(),

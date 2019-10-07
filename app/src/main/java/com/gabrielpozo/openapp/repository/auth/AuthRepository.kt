@@ -81,7 +81,7 @@ class AuthRepository @Inject constructor(
     ): LiveData<DataState<AuthViewState>> {
         val registrationFieldsErrors = RegistrationFields(email, username, password, confirmPassword).isValidForRegistration()
         if (registrationFieldsErrors != RegistrationFields.RegistrationError.none()) {
-            returnErrorResponse(registrationFieldsErrors, ResponseType.Dialog)
+            return returnErrorResponse(registrationFieldsErrors, ResponseType.Dialog)
         }
 
         return object : NetworkBoundResource<RegistrationResponse, AuthViewState>(sessionManager.isConnectedToTheInternet()) {
@@ -103,7 +103,6 @@ class AuthRepository @Inject constructor(
                         )
                     )
                 )
-
             }
 
             override fun createCall(): LiveData<GenericApiResponse<RegistrationResponse>> {
@@ -125,6 +124,7 @@ class AuthRepository @Inject constructor(
     ): LiveData<DataState<AuthViewState>> {
         return object : LiveData<DataState<AuthViewState>>() {
             override fun onActive() {
+                Log.d(TAG,"ErrorResponse GAB $errorMessage")
                 value = DataState.error(Response(errorMessage, responseType))
             }
         }

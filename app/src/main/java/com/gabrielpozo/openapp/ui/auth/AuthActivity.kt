@@ -3,6 +3,7 @@ package com.gabrielpozo.openapp.ui.auth
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
@@ -10,13 +11,12 @@ import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import com.gabrielpozo.openapi.R
 import com.gabrielpozo.openapp.ui.BaseActivity
-import com.gabrielpozo.openapp.ui.ResponseType
 import com.gabrielpozo.openapp.ui.main.MainActivity
 import com.gabrielpozo.openapp.viewmodels.ViewModelProviderFactory
+import kotlinx.android.synthetic.main.activity_auth.*
 import javax.inject.Inject
 
 class AuthActivity : BaseActivity(), NavController.OnDestinationChangedListener {
-
     @Inject
     lateinit var providerFactory: ViewModelProviderFactory
 
@@ -33,30 +33,13 @@ class AuthActivity : BaseActivity(), NavController.OnDestinationChangedListener 
 
     private fun subscribeObservers() {
         viewModel.dataState.observe(this, Observer { dataState ->
+            onDataStateChange(dataState)
             dataState.dataState?.let { data ->
                 data.data?.let { event ->
                     event.getContentIfNotHandled()?.let { authViewState ->
                         authViewState.authToken?.let { authToken ->
                             Log.d("Gabriel", "AuthActivity, DataState: $authToken ")
                             viewModel.setAuthToken(authToken)
-                        }
-                    }
-                }
-
-                data.response?.let { event ->
-                    event.getContentIfNotHandled()?.let { response ->
-                        when (response.responseType) {
-                            is ResponseType.Dialog -> {
-                                //inflate errorDialog
-                            }
-
-                            is ResponseType.Toast -> {
-                                //showToast
-                            }
-
-                            is ResponseType.None -> {
-
-                            }
                         }
                     }
                 }
@@ -91,4 +74,13 @@ class AuthActivity : BaseActivity(), NavController.OnDestinationChangedListener 
     ) {
         viewModel.cancelActiveJobs()
     }
+
+    override fun displayProgressBar(bool: Boolean) {
+        if (bool) {
+            progress_bar.visibility = View.VISIBLE
+        } else {
+            progress_bar.visibility = View.INVISIBLE
+        }
+    }
+
 }

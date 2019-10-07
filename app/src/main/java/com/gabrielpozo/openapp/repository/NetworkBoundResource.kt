@@ -69,18 +69,17 @@ abstract class NetworkBoundResource<ResponseObject, ViewStateType>(isNetworkAvai
             }
 
             is ApiErrorResponse -> {
-                Log.e(TAG, " NetworkBoundResource AVANTI: ${response.errorMessage}")
+                Log.e(TAG, "NetworkBoundResource: ${response.errorMessage}")
                 onErrorReturn(response.errorMessage, shouldUseDialog = true, shouldUseToast = false)
             }
 
             is ApiEmptyResponse -> {
-                Log.e(TAG, " NetworkBoundResource: request return nothing (HTTP 204")
+                Log.e(TAG, "NetworkBoundResource: request return nothing (HTTP 204")
                 onErrorReturn(
                     ERROR_EMPTY_RESPONSE,
                     shouldUseDialog = true,
                     shouldUseToast = false
                 )
-
             }
         }
     }

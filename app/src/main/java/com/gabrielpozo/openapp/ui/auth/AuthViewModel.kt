@@ -26,6 +26,7 @@ class AuthViewModel @Inject constructor(val authRepository: AuthRepository) :
             is LoginAttemptStateEvent -> {
                 authRepository.attemptLogin(stateEvent.email, stateEvent.password)
             }
+
             is RegisterAttemptStateEvent -> {
                 authRepository.attemptRegistration(
                     stateEvent.email,
@@ -34,6 +35,7 @@ class AuthViewModel @Inject constructor(val authRepository: AuthRepository) :
                     stateEvent.confirm_password
                 )
             }
+
             is CheckPreviousAuthEvent -> {
                 AbsentLiveData.create()
             }
