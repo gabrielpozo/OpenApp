@@ -1,5 +1,6 @@
 package com.gabrielpozo.openapp.di.auth
 
+import android.content.SharedPreferences
 import com.gabrielpozo.openapp.api.auth.OpenApiAuthService
 import com.gabrielpozo.openapp.persistence.AccountPropertiesDao
 import com.gabrielpozo.openapp.persistence.AuthTokenDao
@@ -27,13 +28,17 @@ class AuthModule {
         sessionManager: SessionManager,
         authTokenDao: AuthTokenDao,
         accountPropertiesDao: AccountPropertiesDao,
-        openApiAuthService: OpenApiAuthService
+        openApiAuthService: OpenApiAuthService,
+        sharedPreferences: SharedPreferences,
+        editor: SharedPreferences.Editor
     ): AuthRepository {
         return AuthRepository(
             authTokenDao,
             accountPropertiesDao,
             openApiAuthService,
-            sessionManager
+            sessionManager,
+            sharedPreferences,
+            editor
         )
     }
 

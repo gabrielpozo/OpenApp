@@ -13,12 +13,11 @@ import com.gabrielpozo.openapp.ui.auth.state.RegistrationFields
 import com.gabrielpozo.openapp.util.AbsentLiveData
 import javax.inject.Inject
 
-class AuthViewModel @Inject constructor(val authRepository: AuthRepository) :
+class AuthViewModel @Inject constructor(private val authRepository: AuthRepository) :
     BaseViewModel<AuthStateEvent, AuthViewState>() {
 
     override fun initViewState(): AuthViewState {
         return AuthViewState()
-
     }
 
     override fun handleStateEvent(stateEvent: AuthStateEvent): LiveData<DataState<AuthViewState>> {
@@ -37,7 +36,7 @@ class AuthViewModel @Inject constructor(val authRepository: AuthRepository) :
             }
 
             is CheckPreviousAuthEvent -> {
-                AbsentLiveData.create()
+                authRepository.checkPreviousAuthUser()
             }
         }
     }

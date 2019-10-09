@@ -23,7 +23,7 @@ class SessionManager @Inject constructor(
     val application: Application
 ) {
 
-    private val TAG: String = "AppDebug"
+    private val TAG: String = "Gabriel"
 
     private val _cachedToken = MutableLiveData<AuthToken>()
 
@@ -49,6 +49,7 @@ class SessionManager @Inject constructor(
                 Log.e(TAG, "logout ${e.message}")
                 errorMessage = errorMessage + "\n" + e.message
             } finally {
+                Log.d("Gabriel","ERROR MESSAGE in sessionManager")
                 errorMessage?.let {
                     Log.e(TAG, "logout: $errorMessage")
                 }

@@ -1,6 +1,8 @@
 package com.gabrielpozo.openapp.di
 
 import android.app.Application
+import android.content.Context
+import android.content.SharedPreferences
 import androidx.room.Room
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
@@ -13,6 +15,7 @@ import com.gabrielpozo.openapp.persistence.AuthTokenDao
 import com.gabrielpozo.openapp.util.Constants
 import com.gabrielpozo.openapp.util.LiveDataCallAdapter
 import com.gabrielpozo.openapp.util.LiveDataCallAdapterFactory
+import com.gabrielpozo.openapp.util.PreferenceKeys
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
@@ -77,4 +80,15 @@ class AppModule {
             .setDefaultRequestOptions(requestOptions)
     }
 
+    @Singleton
+    @Provides
+    fun provideSharePreferences(app: Application): SharedPreferences {
+        return app.getSharedPreferences(PreferenceKeys.APP_PREFERENCES, Context.MODE_PRIVATE)
+    }
+
+    @Singleton
+    @Provides
+    fun provideSharePreferncesEditor(sharedPreferences: SharedPreferences): SharedPreferences.Editor {
+        return sharedPreferences.edit()
+    }
 }

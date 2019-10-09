@@ -8,6 +8,7 @@ import com.gabrielpozo.openapp.ui.Response
 import com.gabrielpozo.openapp.ui.ResponseType
 import com.gabrielpozo.openapp.util.*
 import com.gabrielpozo.openapp.util.Constants.Companion.NETWORK_TIMEOUT
+import com.gabrielpozo.openapp.util.Constants.Companion.TESTING_CACHE_DELAY
 import com.gabrielpozo.openapp.util.Constants.Companion.TESTING_NETWORK_DELAY
 import com.gabrielpozo.openapp.util.ErrorHandling.Companion.ERROR_CHECK_NETWORK_CONNECTION
 import com.gabrielpozo.openapp.util.ErrorHandling.Companion.ERROR_EMPTY_RESPONSE
@@ -18,7 +19,10 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 
-abstract class NetworkBoundResource<ResponseObject, ViewStateType>(isNetworkAvailable: Boolean) {
+abstract class NetworkBoundResource<ResponseObject, ViewStateType>(
+    isNetworkAvailable: Boolean, //is there a network connection
+    isNetworkRequest: Boolean // is there an network request
+) {
 
     private val TAG: String = "Gabriel"
 
@@ -29,36 +33,45 @@ abstract class NetworkBoundResource<ResponseObject, ViewStateType>(isNetworkAvai
     init {
         setJob(initNewJob())
         setValue(DataState.loading(loading = true))
-        if (isNetworkAvailable) {
-            coroutineScope.launch {
-                //simulate a Network delay
-                delay(TESTING_NETWORK_DELAY)
+        if (isNetworkRequest) {
+            if (isNetworkAvailable) {
+                coroutineScope.launch {
+                    //simulate a Network delay
+                    delay(TESTING_NETWORK_DELAY)
 
-                withContext(Main) {
-                    val apiResponse = createCall()
-                    result.addSource(apiResponse) { response ->
-                        result.removeSource(apiResponse)
-                        coroutineScope.launch {
-                            handleNetworkResponse(response)
+                    withContext(Main) {
+                        val apiResponse = createCall()
+                        result.addSource(apiResponse) { response ->
+                            result.removeSource(apiResponse)
+                            coroutineScope.launch {
+                                handleNetworkResponse(response)
+                            }
                         }
                     }
                 }
-            }
 
-            GlobalScope.launch(IO) {
-                delay(NETWORK_TIMEOUT)
-                if (!job.isCompleted) {
-                    Log.d("Gabriel", "Job network timeout")
-                    job.cancel(CancellationException(UNABLE_TO_RESOLVE_HOST))
+                GlobalScope.launch(IO) {
+                    delay(NETWORK_TIMEOUT)
+                    if (!job.isCompleted) {
+                        Log.d("Gabriel", "Job network timeout")
+                        job.cancel(CancellationException(UNABLE_TO_RESOLVE_HOST))
+                    }
                 }
-            }
 
+            } else {
+                onErrorReturn(
+                    UNABLE_TODO_OPERATION_WO_INTERNET,
+                    shouldUseDialog = true,
+                    shouldUseToast = false
+                )
+            }
         } else {
-            onErrorReturn(
-                UNABLE_TODO_OPERATION_WO_INTERNET,
-                shouldUseDialog = true,
-                shouldUseToast = false
-            )
+            coroutineScope.launch {
+                //fake delay for testing cache
+                delay(TESTING_CACHE_DELAY)
+                //View data from cache ONLY and return
+                createCacheRequestAndReturn()
+            }
         }
     }
 
@@ -164,6 +177,8 @@ abstract class NetworkBoundResource<ResponseObject, ViewStateType>(isNetworkAvai
     abstract suspend fun handleApiSuccessResponse(response: ApiSuccessResponse<ResponseObject>)
 
     abstract fun createCall(): LiveData<GenericApiResponse<ResponseObject>>
+
+    abstract suspend fun createCacheRequestAndReturn()
 
     abstract fun setJob(job: Job)
 }
