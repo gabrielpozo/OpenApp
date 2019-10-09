@@ -11,7 +11,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-abstract class BaseActivity : DaggerAppCompatActivity(), DataChangeStateListener {
+abstract class BaseActivity : DaggerAppCompatActivity(), DataStateChangeListener {
     private val TAG: String = "Gabriel"
 
     @Inject
@@ -37,22 +37,25 @@ abstract class BaseActivity : DaggerAppCompatActivity(), DataChangeStateListener
         errorEvent.getContentIfNotHandled()?.let {
             when (it.response.responseType) {
                 is ResponseType.Toast -> {
-                    it.response.message?.let {
-                        displayToast(it)
+                    it.response.message?.let { message ->
+                        displayToast(message)
+                        displayProgressBar(false)
                     }
                 }
 
                 is ResponseType.Dialog -> {
                     it.response.message?.let { message ->
                         displayErrorDialog(message)
-                    }
+                        displayProgressBar(false)
 
+                    }
                 }
 
                 is ResponseType.None -> {
                     Log.e(TAG, "handleStateError: ${it.response.message}")
                 }
             }
+            displayProgressBar(false)
         }
     }
 

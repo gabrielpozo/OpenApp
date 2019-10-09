@@ -1,5 +1,5 @@
 package com.gabrielpozo.openapp.ui
 
-interface DataChangeStateListener {
+interface DataStateChangeListener {
     fun onDataStateChange(data: DataState<*>?)
 }
