@@ -42,7 +42,7 @@ class AuthViewModel @Inject constructor(private val authRepository: AuthReposito
     }
 
     fun setRegistrationFields(registrationFields: RegistrationFields) {
-        val update = getCurrentNewStateorNew()
+        val update = getCurrentNewStateOrNew()
         if (update.registrationFields == registrationFields)
             return
 
@@ -51,7 +51,7 @@ class AuthViewModel @Inject constructor(private val authRepository: AuthReposito
     }
 
     fun setLoginFields(loginFields: LoginFields) {
-        val update = getCurrentNewStateorNew()
+        val update = getCurrentNewStateOrNew()
         if (update.loginFields == loginFields)
             return
 
@@ -60,7 +60,7 @@ class AuthViewModel @Inject constructor(private val authRepository: AuthReposito
     }
 
     fun setAuthToken(authToken: AuthToken) {
-        val update = getCurrentNewStateorNew()
+        val update = getCurrentNewStateOrNew()
         if (update.authToken == authToken)
             return
 
