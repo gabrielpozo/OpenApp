@@ -18,7 +18,7 @@ abstract class BaseActivity : DaggerAppCompatActivity(), DataStateChangeListener
     lateinit var sessionManager: SessionManager
 
     override fun onDataStateChange(dataState: DataState<*>?) {
-        dataState?.let {dataState ->
+        dataState?.let { dataState ->
             GlobalScope.launch(Dispatchers.Main) {
                 displayProgressBar(dataState.loading.isLoading)
                 dataState.error?.let { errorEvent ->
@@ -59,23 +59,23 @@ abstract class BaseActivity : DaggerAppCompatActivity(), DataStateChangeListener
     }
 
     private fun handleStateResponse(event: Event<Response>) {
-        event.getContentIfNotHandled()?.let {
-            when (it.responseType) {
+        event.getContentIfNotHandled()?.let { response ->
+            when (response.responseType) {
                 is ResponseType.Toast -> {
-                    it.message?.let {
-                        displayToast(it)
+                    response.message?.let { message ->
+                        displayToast(message)
                     }
                 }
 
                 is ResponseType.Dialog -> {
-                    it.message?.let { message ->
+                    response.message?.let { message ->
                         displaySuccessDialog(message)
                     }
 
                 }
 
                 is ResponseType.None -> {
-                    Log.e(TAG, "handleStateResponse: ${it.message}")
+                    Log.e(TAG, "handleStateResponse: ${response.message}")
                 }
             }
         }
