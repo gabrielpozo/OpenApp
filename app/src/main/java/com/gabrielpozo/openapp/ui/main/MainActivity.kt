@@ -17,6 +17,7 @@ import com.gabrielpozo.openapp.ui.main.blog.UpdateBlogFragment
 import com.gabrielpozo.openapp.ui.main.blog.ViewBlogFragment
 import com.gabrielpozo.openapp.util.BottomNavController
 import com.gabrielpozo.openapp.util.setUpNavigation
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -104,7 +105,7 @@ class MainActivity : BaseActivity(), BottomNavController.NavGraphProvider,
     }
 
     override fun onGraphChanged() {
-       // TODO("What needs to happen when graph changes")
+        expandBar()
     }
 
     override fun onReselectNavItem(navController: NavController, fragment: Fragment) =
@@ -128,5 +129,9 @@ class MainActivity : BaseActivity(), BottomNavController.NavGraphProvider,
         }
 
     override fun onBackPressed() = bottomNavController.onBackPressed()
+
+    private fun expandBar() {
+        findViewById<AppBarLayout>(R.id.app_bar).setExpanded(true)
+    }
 
 }

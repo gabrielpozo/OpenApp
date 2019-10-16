@@ -14,6 +14,7 @@ import com.gabrielpozo.openapp.ui.BaseActivity
 import com.gabrielpozo.openapp.ui.auth.state.AuthStateEvent
 import com.gabrielpozo.openapp.ui.main.MainActivity
 import com.gabrielpozo.openapp.viewmodels.ViewModelProviderFactory
+import com.google.android.material.appbar.AppBarLayout
 import kotlinx.android.synthetic.main.activity_auth.*
 import javax.inject.Inject
 
