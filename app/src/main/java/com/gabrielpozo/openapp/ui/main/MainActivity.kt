@@ -68,7 +68,6 @@ class MainActivity : BaseActivity(), BottomNavController.NavGraphProvider,
             Log.d(TAG, "MainActivity: SubscribeObserver: AuthToken: $authToken")
             if (authToken == null || authToken.account_pk == -1 || authToken.token == null) {
                 navAuthActivity()
-                finish()
             }
         })
     }

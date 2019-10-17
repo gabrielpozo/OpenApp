@@ -26,35 +26,34 @@ constructor(
     val application: Application
 ) {
 
-    private val TAG: String = "AppDebug"
+    private val TAG: String = "Gabriel"
 
     private val _cachedToken = MutableLiveData<AuthToken>()
 
     val cachedToken: LiveData<AuthToken>
         get() = _cachedToken
 
-    fun login(newValue: AuthToken){
+    fun login(newValue: AuthToken) {
         setValue(newValue)
     }
 
-    fun logout(){
+    fun logout() {
         Log.d(TAG, "logout: ")
-        CoroutineScope(IO).launch{
+        CoroutineScope(IO).launch {
             var errorMessage: String? = null
-            try{
-                _cachedToken.value!!.account_pk?.let { authTokenDao.nullifyToken(it)
+            try {
+                _cachedToken.value!!.account_pk?.let {
+                    authTokenDao.nullifyToken(it)
                 } ?: throw CancellationException("Token Error. Logging out user.")
-            }catch (e: CancellationException) {
+            } catch (e: CancellationException) {
                 Log.e(TAG, "logout: ${e.message}")
                 errorMessage = e.message
-            }
-            catch (e: Exception) {
+            } catch (e: Exception) {
                 Log.e(TAG, "logout: ${e.message}")
                 errorMessage = errorMessage + "\n" + e.message
-            }
-            finally {
-                errorMessage?.let{
-                    Log.e(TAG, "logout: ${errorMessage}" )
+            } finally {
+                errorMessage?.let {
+                    Log.e(TAG, "logout: ${errorMessage}")
                 }
                 Log.d(TAG, "logout: finally")
                 setValue(null)
@@ -70,11 +69,11 @@ constructor(
         }
     }
 
-    fun isConnectedToTheInternet(): Boolean{
+    fun isConnectedToTheInternet(): Boolean {
         val cm = application.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        try{
+        try {
             return cm.activeNetworkInfo.isConnected
-        }catch (e: Exception){
+        } catch (e: Exception) {
             Log.e(TAG, "isConnectedToTheInternet: ${e.message}")
         }
         return false

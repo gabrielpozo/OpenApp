@@ -15,7 +15,6 @@ import com.gabrielpozo.openapp.ui.auth.state.AuthStateEvent
 import com.gabrielpozo.openapp.ui.main.MainActivity
 import com.gabrielpozo.openapp.util.SuccessHandling.Companion.RESPONSE_CHECK_PREVIOUS_AUTH_USER_DONE
 import com.gabrielpozo.openapp.viewmodels.ViewModelProviderFactory
-import com.google.android.material.appbar.AppBarLayout
 import kotlinx.android.synthetic.main.activity_auth.*
 import javax.inject.Inject
 
@@ -68,8 +67,6 @@ class AuthActivity : BaseActivity(), NavController.OnDestinationChangedListener 
 
         viewModel.viewState.observe(this, Observer { viewState ->
             viewState.authToken?.let { authToken ->
-
-
                 sessionManager.login(authToken)
             }
 
@@ -77,7 +74,7 @@ class AuthActivity : BaseActivity(), NavController.OnDestinationChangedListener 
 
 
         sessionManager.cachedToken.observe(this, Observer { authToken ->
-            Log.d("Gabriel", "MainActivity: SubscribeObserver: AuthToken: $authToken")
+            Log.d(TAG, "MainActivity: SubscribeObserver: AuthToken: $authToken")
             if (authToken != null && authToken.account_pk != -1 && authToken.token != null) {
                 navMainActivity()
             }
@@ -88,7 +85,7 @@ class AuthActivity : BaseActivity(), NavController.OnDestinationChangedListener 
         viewModel.setStateEvent(AuthStateEvent.CheckPreviousAuthEvent)
     }
 
-    private fun onFinishCheckPreviousAuthUser(){
+    private fun onFinishCheckPreviousAuthUser() {
         fragment_container.visibility = View.VISIBLE
     }
 
