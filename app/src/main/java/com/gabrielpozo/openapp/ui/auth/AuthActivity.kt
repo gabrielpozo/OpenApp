@@ -57,7 +57,7 @@ class AuthActivity : BaseActivity(), NavController.OnDestinationChangedListener 
                     event.getContentIfNotHandled()?.let { authViewState ->
                         authViewState.authToken?.let { authToken ->
                             Log.d(TAG, "AuthActivity, DataState: $authToken ")
-                            viewModel.setAuthToken(authToken)
+                            viewModel.setAuthToken(authToken) // we do this action in order to login
                         }
                     }
                 }

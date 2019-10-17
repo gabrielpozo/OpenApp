@@ -4,15 +4,10 @@ import android.os.Bundle
 import android.view.*
 import androidx.navigation.fragment.findNavController
 import com.gabrielpozo.openapi.R
-import com.gabrielpozo.openapp.session.SessionManager
 import kotlinx.android.synthetic.main.fragment_account.*
-import javax.inject.Inject
 
 
 class AccountFragment : BaseAccountFragment() {
-
-    @Inject
-    lateinit var sessionManager: SessionManager
 
 
     override fun onCreateView(
@@ -31,7 +26,7 @@ class AccountFragment : BaseAccountFragment() {
             findNavController().navigate(R.id.action_accountFragment_to_changePasswordFragment)
         }
         logout_button.setOnClickListener {
-            sessionManager.logout()
+            viewModel.logout()
         }
     }
 
