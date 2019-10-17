@@ -10,18 +10,30 @@ import com.google.gson.annotations.SerializedName
 data class AccountProperties(
     @SerializedName("pk")
     @Expose
-    @PrimaryKey
-    @ColumnInfo
+    @PrimaryKey(autoGenerate = false)
+    @ColumnInfo(name = "pk")
     var pk: Int,
 
-    @SerializedName("pk")
+    @SerializedName("email")
     @Expose
-    @ColumnInfo
+    @ColumnInfo(name = "email")
     var email: String,
 
-    @SerializedName("pk")
+    @SerializedName("username")
     @Expose
-    @ColumnInfo
+    @ColumnInfo(name = "username")
     var userName: String
 ) {
+
+    override fun equals(other: Any?): Boolean {
+        if (javaClass != other?.javaClass) return false
+
+        other as AccountProperties
+
+        if (pk != other.pk) return false
+        if (email != other.email) return false
+        if (userName != other.userName) return false
+
+        return true
+    }
 }

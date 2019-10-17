@@ -13,6 +13,7 @@ import com.gabrielpozo.openapi.R
 import com.gabrielpozo.openapp.ui.BaseActivity
 import com.gabrielpozo.openapp.ui.auth.state.AuthStateEvent
 import com.gabrielpozo.openapp.ui.main.MainActivity
+import com.gabrielpozo.openapp.util.SuccessHandling.Companion.RESPONSE_CHECK_PREVIOUS_AUTH_USER_DONE
 import com.gabrielpozo.openapp.viewmodels.ViewModelProviderFactory
 import com.google.android.material.appbar.AppBarLayout
 import kotlinx.android.synthetic.main.activity_auth.*
@@ -24,6 +25,8 @@ class AuthActivity : BaseActivity(), NavController.OnDestinationChangedListener 
 
     lateinit var viewModel: AuthViewModel
 
+    private val TAG: String = "Gabriel"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_auth)
@@ -31,17 +34,30 @@ class AuthActivity : BaseActivity(), NavController.OnDestinationChangedListener 
         findNavController(R.id.auth_host_fragment).addOnDestinationChangedListener(this)
 
         subscribeObservers()
-        checkPreviousAuthUser()
     }
 
     private fun subscribeObservers() {
         viewModel.dataState.observe(this, Observer { dataState ->
             onDataStateChange(dataState)
+
+            dataState.dataState?.let { data ->
+                data.response?.let { event ->
+                    event.peekContent().let { response ->
+                        response.message?.let { message ->
+                            if (message.equals(RESPONSE_CHECK_PREVIOUS_AUTH_USER_DONE)) {
+                                onFinishCheckPreviousAuthUser()
+                            }
+                        }
+                    }
+                }
+            }
+
+
             dataState.dataState?.let { data ->
                 data.data?.let { event ->
                     event.getContentIfNotHandled()?.let { authViewState ->
                         authViewState.authToken?.let { authToken ->
-                            Log.d("Gabriel", "AuthActivity, DataState: $authToken ")
+                            Log.d(TAG, "AuthActivity, DataState: $authToken ")
                             viewModel.setAuthToken(authToken)
                         }
                     }
@@ -49,12 +65,16 @@ class AuthActivity : BaseActivity(), NavController.OnDestinationChangedListener 
             }
         })
 
+
         viewModel.viewState.observe(this, Observer { viewState ->
             viewState.authToken?.let { authToken ->
+
+
                 sessionManager.login(authToken)
             }
 
         })
+
 
         sessionManager.cachedToken.observe(this, Observer { authToken ->
             Log.d("Gabriel", "MainActivity: SubscribeObserver: AuthToken: $authToken")
@@ -66,6 +86,10 @@ class AuthActivity : BaseActivity(), NavController.OnDestinationChangedListener 
 
     private fun checkPreviousAuthUser() {
         viewModel.setStateEvent(AuthStateEvent.CheckPreviousAuthEvent)
+    }
+
+    private fun onFinishCheckPreviousAuthUser(){
+        fragment_container.visibility = View.VISIBLE
     }
 
     private fun navMainActivity() {
@@ -81,6 +105,12 @@ class AuthActivity : BaseActivity(), NavController.OnDestinationChangedListener 
     ) {
         viewModel.cancelActiveJobs()
     }
+
+    override fun onResume() {
+        super.onResume()
+        checkPreviousAuthUser()
+    }
+
 
     override fun displayProgressBar(bool: Boolean) {
         if (bool) {

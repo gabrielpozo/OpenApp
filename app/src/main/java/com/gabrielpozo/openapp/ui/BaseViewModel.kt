@@ -15,7 +15,7 @@ abstract class BaseViewModel<StateEvent, ViewState> : ViewModel() {
 
     val dataState: LiveData<DataState<ViewState>> =
         Transformations.switchMap(_stateEvent) { stateEvent ->
-            _stateEvent?.let {
+            stateEvent?.let {
                 handleStateEvent(stateEvent)
             }
         }

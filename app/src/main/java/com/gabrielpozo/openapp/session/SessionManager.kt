@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData
 import com.gabrielpozo.openapp.models.AuthToken
 import com.gabrielpozo.openapp.persistence.AuthTokenDao
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
@@ -18,63 +19,66 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class SessionManager @Inject constructor(
+class SessionManager
+@Inject
+constructor(
     val authTokenDao: AuthTokenDao,
     val application: Application
 ) {
 
-    private val TAG: String = "Gabriel"
+    private val TAG: String = "AppDebug"
 
     private val _cachedToken = MutableLiveData<AuthToken>()
 
     val cachedToken: LiveData<AuthToken>
         get() = _cachedToken
 
-    fun login(newValue: AuthToken) {
+    fun login(newValue: AuthToken){
         setValue(newValue)
     }
 
-    fun logout() {
-        GlobalScope.launch(IO) {
+    fun logout(){
+        Log.d(TAG, "logout: ")
+        CoroutineScope(IO).launch{
             var errorMessage: String? = null
-            try {
-                cachedToken.value!!.account_pk?.let { token ->
-                    authTokenDao.nullifyToken(token)
-                }
-
-            } catch (e: CancellationException) {
-                Log.e(TAG, "logout ${e.message}")
+            try{
+                _cachedToken.value!!.account_pk?.let { authTokenDao.nullifyToken(it)
+                } ?: throw CancellationException("Token Error. Logging out user.")
+            }catch (e: CancellationException) {
+                Log.e(TAG, "logout: ${e.message}")
                 errorMessage = e.message
-            } catch (e: Exception) {
-                Log.e(TAG, "logout ${e.message}")
+            }
+            catch (e: Exception) {
+                Log.e(TAG, "logout: ${e.message}")
                 errorMessage = errorMessage + "\n" + e.message
-            } finally {
-                Log.d("Gabriel","ERROR MESSAGE in sessionManager")
-                errorMessage?.let {
-                    Log.e(TAG, "logout: $errorMessage")
+            }
+            finally {
+                errorMessage?.let{
+                    Log.e(TAG, "logout: ${errorMessage}" )
                 }
-                Log.e(TAG, "logout finally...")
+                Log.d(TAG, "logout: finally")
                 setValue(null)
             }
         }
     }
 
-    fun isConnectedToTheInternet(): Boolean {
-        val cm = application.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        try {
-            return cm.activeNetworkInfo.isConnected
-
-        } catch (e: Exception) {
-            Log.e(TAG, "isConnected to the Internet: ${e.message}")
-        }
-        return false
-    }
-
-    fun setValue(newValue: AuthToken?) {
+    private fun setValue(newValue: AuthToken?) {
         GlobalScope.launch(Main) {
             if (_cachedToken.value != newValue) {
                 _cachedToken.value = newValue
             }
         }
     }
+
+    fun isConnectedToTheInternet(): Boolean{
+        val cm = application.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        try{
+            return cm.activeNetworkInfo.isConnected
+        }catch (e: Exception){
+            Log.e(TAG, "isConnectedToTheInternet: ${e.message}")
+        }
+        return false
+    }
+
+
 }

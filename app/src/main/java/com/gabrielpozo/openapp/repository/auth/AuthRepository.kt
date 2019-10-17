@@ -205,26 +205,36 @@ class AuthRepository @Inject constructor(
             }
 
             override suspend fun createCacheRequestAndReturn() {
-                accountPropertiesDao.searchByEmail(previousAuthUserEmail).let { accountProperties ->
-                    Log.d(TAG, "checkPreviousUser: searching for token: $previousAuthUserEmail")
-                    accountProperties?.let {
+                accountPropertiesDao.searchByEmail(previousAuthUserEmail)
+                    ?.let { accountProperties ->
+                        Log.d(TAG, "checkPreviousUser: searching for token: $previousAuthUserEmail")
+                        //  accountProperties?.let {
                         if (accountProperties.pk > -1) {
                             authTokenDao.searchByPk(accountProperties.pk).let { authToken ->
                                 if (authToken != null) {
-                                    onCompleteJob(DataState.dataState(data = AuthViewState(authToken = authToken)))
-                                    return
+                                    if (authToken.token != null) {
+                                        onCompleteJob(
+                                            DataState.dataState(
+                                                data = AuthViewState(
+                                                    authToken = authToken
+                                                )
+                                            )
+                                        )
+                                        return
+                                    }
                                 }
                             }
                         }
+
                     }
-                    onCompleteJob(
-                        DataState.dataState(
-                            data = null, response = Response(
-                                RESPONSE_CHECK_PREVIOUS_AUTH_USER_DONE, ResponseType.None
-                            )
+                //  }
+                onCompleteJob(
+                    DataState.dataState(
+                        data = null, response = Response(
+                            RESPONSE_CHECK_PREVIOUS_AUTH_USER_DONE, ResponseType.None
                         )
                     )
-                }
+                )
             }
 
             override fun setJob(job: Job) {
