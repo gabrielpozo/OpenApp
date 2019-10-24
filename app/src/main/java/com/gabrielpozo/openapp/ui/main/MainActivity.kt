@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
@@ -19,7 +20,9 @@ import com.gabrielpozo.openapp.util.BottomNavController
 import com.gabrielpozo.openapp.util.setUpNavigation
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.android.synthetic.main.activity_auth.*
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.progress_bar
 
 class MainActivity : BaseActivity(), BottomNavController.NavGraphProvider,
     BottomNavController.OnNavigationGraphChanged,
@@ -79,10 +82,21 @@ class MainActivity : BaseActivity(), BottomNavController.NavGraphProvider,
     }
 
     override fun displayProgressBar(bool: Boolean) {
+        //(progress_bar.isVisible)
         if (bool) {
             progress_bar.visibility = View.VISIBLE
         } else {
-            progress_bar.visibility = View.INVISIBLE
+            if (progress_bar.isVisible) {
+                progress_bar.visibility = View.INVISIBLE
+            }
+        }
+
+        if (bool) {
+            progress_bar.visibility = View.VISIBLE
+        } else {
+            if (progress_bar.isVisible) {
+                progress_bar.visibility = View.INVISIBLE
+            }
         }
     }
 

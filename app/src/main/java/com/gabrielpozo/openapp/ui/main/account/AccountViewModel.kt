@@ -21,14 +21,21 @@ class AccountViewModel @Inject constructor(
     }
 
     override fun handleStateEvent(stateEvent: AccountStateEvent): LiveData<DataState<AccountViewState>> {
-
         when (stateEvent) {
             is GetAccountPropertiesEvent -> {
-                return AbsentLiveData.create()
+                return sessionManager.cachedToken.value?.let { authToken ->
+                    accountRepository.getAccountProperties(authToken)
+                } ?: AbsentLiveData.create()
             }
 
             is UpdateAccountPropertiesEvent -> {
-                return AbsentLiveData.create()
+                return sessionManager.cachedToken.value?.let { authToken ->
+                    authToken.account_pk?.let { pk ->
+                        accountRepository.saveAccountProperties(
+                            authToken, AccountProperties(pk, stateEvent.email, stateEvent.username)
+                        )
+                    }
+                } ?: AbsentLiveData.create()
             }
 
             is ChangePasswordEvent -> {
@@ -38,8 +45,6 @@ class AccountViewModel @Inject constructor(
             is None -> {
                 return AbsentLiveData.create()
             }
-
-
         }
     }
 
@@ -50,10 +55,10 @@ class AccountViewModel @Inject constructor(
         }
         update.accountProperties = accountProperties
         _viewState.value = update
-
     }
 
     fun logout() {
         sessionManager.logout()
     }
+
 }

@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import java.sql.Timestamp
 
 @Entity(tableName = "account_properties")
 data class AccountProperties(
@@ -22,7 +23,11 @@ data class AccountProperties(
     @SerializedName("username")
     @Expose
     @ColumnInfo(name = "username")
-    var userName: String
+    var userName: String,
+
+    @Expose
+    @ColumnInfo(name = "timestamp")
+    var timestamp: Int? = null
 ) {
 
     override fun equals(other: Any?): Boolean {
@@ -33,6 +38,7 @@ data class AccountProperties(
         if (pk != other.pk) return false
         if (email != other.email) return false
         if (userName != other.userName) return false
+        //if (timestamp != other.timestamp) return false
 
         return true
     }

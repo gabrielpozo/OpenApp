@@ -39,11 +39,11 @@ class AuthActivity : BaseActivity(), NavController.OnDestinationChangedListener 
         viewModel.dataState.observe(this, Observer { dataState ->
             onDataStateChange(dataState)
 
-            dataState.dataState?.let { data ->
+            dataState.data?.let { data ->
                 data.response?.let { event ->
                     event.peekContent().let { response ->
                         response.message?.let { message ->
-                            if (message.equals(RESPONSE_CHECK_PREVIOUS_AUTH_USER_DONE)) {
+                            if (message == RESPONSE_CHECK_PREVIOUS_AUTH_USER_DONE) {
                                 onFinishCheckPreviousAuthUser()
                             }
                         }
@@ -52,7 +52,7 @@ class AuthActivity : BaseActivity(), NavController.OnDestinationChangedListener 
             }
 
 
-            dataState.dataState?.let { data ->
+            dataState.data?.let { data ->
                 data.data?.let { event ->
                     event.getContentIfNotHandled()?.let { authViewState ->
                         authViewState.authToken?.let { authToken ->
@@ -69,7 +69,6 @@ class AuthActivity : BaseActivity(), NavController.OnDestinationChangedListener 
             viewState.authToken?.let { authToken ->
                 sessionManager.login(authToken)
             }
-
         })
 
 

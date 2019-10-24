@@ -1,7 +1,6 @@
 package com.gabrielpozo.openapp.ui.main.account.state
 
 sealed class AccountStateEvent {
-
     object GetAccountPropertiesEvent : AccountStateEvent()
     data class UpdateAccountPropertiesEvent(val email: String, val username: String) :
         AccountStateEvent()

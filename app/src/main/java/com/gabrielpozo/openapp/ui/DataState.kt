@@ -3,7 +3,7 @@ package com.gabrielpozo.openapp.ui
 data class DataState<T>(
     val error: Event<StateError>? = null,
     val loading: Loading = Loading(false),
-    val dataState: Data<T>? = null
+    val data: Data<T>? = null
 ) {
     companion object {
         fun <T> error(response: Response): DataState<T> {
@@ -13,13 +13,13 @@ data class DataState<T>(
         fun <T> loading(loading: Boolean, cachedData: T? = null): DataState<T> {
             return DataState(
                 loading = Loading(loading),
-                dataState = Data(Event.dataEvent(cachedData), null)
+                data = Data(Event.dataEvent(cachedData), null)
             )
         }
 
-        fun <T> dataState(data: T?, response: Response? = null): DataState<T> {
+        fun <T> data(data: T?, response: Response? = null): DataState<T> {
             return DataState(
-                dataState = Data(
+                data = Data(
                     data = Event.dataEvent(data),
                     response = Event.dataEvent(response)
                 )

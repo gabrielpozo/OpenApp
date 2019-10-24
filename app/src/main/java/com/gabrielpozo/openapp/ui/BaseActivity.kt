@@ -21,16 +21,22 @@ abstract class BaseActivity : DaggerAppCompatActivity(), DataStateChangeListener
         dataState?.let { dataState ->
             GlobalScope.launch(Dispatchers.Main) {
                 displayProgressBar(dataState.loading.isLoading)
+
                 dataState.error?.let { errorEvent ->
                     handleStateError(errorEvent)
                 }
-                dataState.dataState?.let {
-                    it.response?.let { responseEvent ->
+
+                dataState.data?.let { data ->
+                    data.response?.let { responseEvent ->
                         handleStateResponse(responseEvent)
                     }
                 }
             }
         }
+    }
+
+    override fun finishLoadingStatus() {
+        displayProgressBar(false)
     }
 
     private fun handleStateError(errorEvent: Event<StateError>) {
@@ -71,7 +77,6 @@ abstract class BaseActivity : DaggerAppCompatActivity(), DataStateChangeListener
                     response.message?.let { message ->
                         displaySuccessDialog(message)
                     }
-
                 }
 
                 is ResponseType.None -> {

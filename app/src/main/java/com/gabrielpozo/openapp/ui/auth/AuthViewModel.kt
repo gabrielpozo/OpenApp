@@ -3,6 +3,7 @@ package com.gabrielpozo.openapp.ui.auth
 import androidx.lifecycle.LiveData
 import com.gabrielpozo.openapp.models.AuthToken
 import com.gabrielpozo.openapp.repository.auth.AuthRepository
+import com.gabrielpozo.openapp.session.SessionManager
 import com.gabrielpozo.openapp.ui.BaseViewModel
 import com.gabrielpozo.openapp.ui.DataState
 import com.gabrielpozo.openapp.ui.auth.state.AuthStateEvent
@@ -10,10 +11,12 @@ import com.gabrielpozo.openapp.ui.auth.state.AuthStateEvent.*
 import com.gabrielpozo.openapp.ui.auth.state.AuthViewState
 import com.gabrielpozo.openapp.ui.auth.state.LoginFields
 import com.gabrielpozo.openapp.ui.auth.state.RegistrationFields
-import com.gabrielpozo.openapp.util.AbsentLiveData
 import javax.inject.Inject
 
-class AuthViewModel @Inject constructor(private val authRepository: AuthRepository) :
+class AuthViewModel @Inject constructor(
+    private val authRepository: AuthRepository,
+    val sessionManager: SessionManager
+) :
     BaseViewModel<AuthStateEvent, AuthViewState>() {
 
     override fun initViewState(): AuthViewState {
@@ -66,6 +69,10 @@ class AuthViewModel @Inject constructor(private val authRepository: AuthReposito
 
         update.authToken = authToken
         _viewState.value = update
+    }
+
+    fun login(authToken: AuthToken) {
+        sessionManager.login(authToken)
     }
 
     fun cancelActiveJobs() {

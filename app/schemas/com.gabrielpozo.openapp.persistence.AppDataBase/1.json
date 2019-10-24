@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "41687438ba0245123edb91bb8b41f4be",
+    "identityHash": "7faf30c0a71aa4a191497bdfaa2a0c62",
     "entities": [
       {
         "tableName": "auth_token",
@@ -44,7 +44,7 @@
       },
       {
         "tableName": "account_properties",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`pk` INTEGER NOT NULL, `email` TEXT NOT NULL, `username` TEXT NOT NULL, PRIMARY KEY(`pk`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`pk` INTEGER NOT NULL, `email` TEXT NOT NULL, `username` TEXT NOT NULL, `timestamp` INTEGER, PRIMARY KEY(`pk`))",
         "fields": [
           {
             "fieldPath": "pk",
@@ -63,6 +63,12 @@
             "columnName": "username",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "timestamp",
+            "columnName": "timestamp",
+            "affinity": "INTEGER",
+            "notNull": false
           }
         ],
         "primaryKey": {
@@ -78,7 +84,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '41687438ba0245123edb91bb8b41f4be')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7faf30c0a71aa4a191497bdfaa2a0c62')"
     ]
   }
 }

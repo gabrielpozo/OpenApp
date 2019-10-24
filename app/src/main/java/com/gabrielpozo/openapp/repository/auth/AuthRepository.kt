@@ -18,12 +18,9 @@ import com.gabrielpozo.openapp.ui.ResponseType
 import com.gabrielpozo.openapp.ui.auth.state.AuthViewState
 import com.gabrielpozo.openapp.ui.auth.state.LoginFields
 import com.gabrielpozo.openapp.ui.auth.state.RegistrationFields
-import com.gabrielpozo.openapp.util.AbsentLiveData
-import com.gabrielpozo.openapp.util.ApiSuccessResponse
+import com.gabrielpozo.openapp.util.*
 import com.gabrielpozo.openapp.util.ErrorHandling.Companion.ERROR_SAVE_AUTH_TOKEN
 import com.gabrielpozo.openapp.util.ErrorHandling.Companion.GENERIC_AUTH_ERROR
-import com.gabrielpozo.openapp.util.GenericApiResponse
-import com.gabrielpozo.openapp.util.PreferenceKeys
 import com.gabrielpozo.openapp.util.SuccessHandling.Companion.RESPONSE_CHECK_PREVIOUS_AUTH_USER_DONE
 import kotlinx.coroutines.Job
 import javax.inject.Inject
@@ -48,10 +45,13 @@ class AuthRepository @Inject constructor(
             return returnErrorResponse(loginFieldErrors, ResponseType.Dialog)
         }
         return object :
-            NetworkBoundResource<LoginResponse, AuthViewState>(
+            NetworkBoundResource<LoginResponse, Any, AuthViewState>(
                 sessionManager.isConnectedToTheInternet(),
+                true,
+                false,
                 true
             ) {
+
             //not used in this case - not applicable
             override suspend fun createCacheRequestAndReturn() {
 
@@ -71,7 +71,12 @@ class AuthRepository @Inject constructor(
                 //don't care about the result. Just insert if it doesn't exist b/c foreign key relationship
                 //with the authToken table
                 accountPropertiesDao.insertOrIgnore(
-                    AccountProperties(response.body.pk, response.body.email, "")
+                    AccountProperties(
+                        response.body.pk,
+                        response.body.email,
+                        "",
+                        Constants.accountproperties_update_immediately
+                    )
                 )
                 //will return -1 if it failure
                 val result =
@@ -90,7 +95,7 @@ class AuthRepository @Inject constructor(
                 saveUserToAuthenticatedSharedPrefs(email)
 
                 onCompleteJob(
-                    DataState.dataState(
+                    DataState.data(
                         data = AuthViewState(
                             authToken = AuthToken(response.body.pk, response.body.token)
                         )
@@ -105,6 +110,15 @@ class AuthRepository @Inject constructor(
             override fun setJob(job: Job) {
                 cancelActiveJobs()
                 authRepoJob = job
+            }
+
+            //not used in this case
+            override fun loadFromCache(): LiveData<AuthViewState> {
+                return AbsentLiveData.create()
+            }
+
+            //not used in this case
+            override suspend fun updateLocalDatabase(cacheObject: Any?) {
             }
 
         }.asLiveData()
@@ -124,10 +138,14 @@ class AuthRepository @Inject constructor(
         }
 
         return object :
-            NetworkBoundResource<RegistrationResponse, AuthViewState>(
+            NetworkBoundResource<RegistrationResponse, Any, AuthViewState>(
                 sessionManager.isConnectedToTheInternet(),
+                true,
+                false,
                 true
+
             ) {
+
 
             override suspend fun createCacheRequestAndReturn() {
             }
@@ -146,7 +164,12 @@ class AuthRepository @Inject constructor(
                 //don't care about the result. Just insert if it doesn't exist b/c foreign key relationship
                 //with the authToken table
                 accountPropertiesDao.insertOrIgnore(
-                    AccountProperties(response.body.pk, response.body.email, "")
+                    AccountProperties(
+                        response.body.pk,
+                        response.body.email,
+                        "",
+                        Constants.accountproperties_update_immediately
+                    )
                 )
                 //will return -1 if it failures
                 val result =
@@ -164,7 +187,7 @@ class AuthRepository @Inject constructor(
                 saveUserToAuthenticatedSharedPrefs(email)
 
                 onCompleteJob(
-                    DataState.dataState(
+                    DataState.data(
                         data = AuthViewState(
                             authToken = AuthToken(response.body.pk, response.body.token)
                         )
@@ -181,6 +204,15 @@ class AuthRepository @Inject constructor(
                 authRepoJob = job
             }
 
+            //not used in this case
+            override fun loadFromCache(): LiveData<AuthViewState> {
+                return AbsentLiveData.create()
+            }
+
+            //not used in this case
+            override suspend fun updateLocalDatabase(cacheObject: Any?) {
+            }
+
         }.asLiveData()
     }
 
@@ -191,8 +223,9 @@ class AuthRepository @Inject constructor(
             Log.d("Gabriel", "checkPreviousAuthUser: NO Previously authenticated user found")
             return returnNotTokenFound()
         }
-        return object : NetworkBoundResource<Void, AuthViewState>(
+        return object : NetworkBoundResource<Void, AccountProperties, AuthViewState>(
             sessionManager.isConnectedToTheInternet(),
+            false,
             false
         ) {
             //not used in this case
@@ -208,13 +241,13 @@ class AuthRepository @Inject constructor(
                 accountPropertiesDao.searchByEmail(previousAuthUserEmail)
                     ?.let { accountProperties ->
                         Log.d(TAG, "checkPreviousUser: searching for token: $previousAuthUserEmail")
-                        //  accountProperties?.let {
                         if (accountProperties.pk > -1) {
                             authTokenDao.searchByPk(accountProperties.pk).let { authToken ->
                                 if (authToken != null) {
+                                    updateLocalDatabase(accountProperties)
                                     if (authToken.token != null) {
                                         onCompleteJob(
-                                            DataState.dataState(
+                                            DataState.data(
                                                 data = AuthViewState(
                                                     authToken = authToken
                                                 )
@@ -227,9 +260,8 @@ class AuthRepository @Inject constructor(
                         }
 
                     }
-                //  }
                 onCompleteJob(
-                    DataState.dataState(
+                    DataState.data(
                         data = null, response = Response(
                             RESPONSE_CHECK_PREVIOUS_AUTH_USER_DONE, ResponseType.None
                         )
@@ -242,6 +274,21 @@ class AuthRepository @Inject constructor(
                 authRepoJob = job
             }
 
+            //not used in this case
+            override fun loadFromCache(): LiveData<AuthViewState> {
+                return AbsentLiveData.create()
+            }
+
+            //not used in this case
+            override suspend fun updateLocalDatabase(cacheObject: AccountProperties?) {
+                cacheObject?.let {
+                    accountPropertiesDao.updateAccountTimestampProperty(
+                        cacheObject.pk,
+                        Constants.accountproperties_update_immediately
+                    )
+                }
+            }
+
         }.asLiveData()
 
     }
@@ -250,7 +297,7 @@ class AuthRepository @Inject constructor(
         return object : LiveData<DataState<AuthViewState>>() {
             override fun onActive() {
                 super.onActive()
-                value = DataState.dataState(
+                value = DataState.data(
                     data = null,
                     response = Response(RESPONSE_CHECK_PREVIOUS_AUTH_USER_DONE, ResponseType.None)
                 )
