@@ -1,6 +1,8 @@
 package com.gabrielpozo.openapp.ui
 
+import android.content.Context
 import android.util.Log
+import android.view.inputmethod.InputMethodManager
 import com.gabrielpozo.openapp.session.SessionManager
 import com.gabrielpozo.openapp.util.extensions.displayErrorDialog
 import com.gabrielpozo.openapp.util.extensions.displaySuccessDialog
@@ -85,6 +87,15 @@ abstract class BaseActivity : DaggerAppCompatActivity(), DataStateChangeListener
             }
         }
 
+    }
+
+    override fun hideSoftKeyboard() {
+        if (currentFocus != null) {
+            val inputMethodManager =
+                getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputMethodManager.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
+
+        }
     }
 
 

@@ -53,7 +53,6 @@ abstract class NetworkBoundResource<ResponseObject, CacheObject, ViewStateType>(
                     doNetWorkRequest()
                 } else {
                     if (shouldCancelIfnotInternet) {
-                        Log.e(TAG, "NetworkBoundResource GABRIEL:")
                         onErrorReturn(
                             UNABLE_TODO_OPERATION_WO_INTERNET,
                             shouldUseDialog = true,
@@ -79,24 +78,19 @@ abstract class NetworkBoundResource<ResponseObject, CacheObject, ViewStateType>(
     private suspend fun doNetWorkRequest() {
         //simulate a Network delay
         delay(TESTING_NETWORK_DELAY)
-
-        Log.d("GabrielDe", "withContext Main before")
         withContext(Main) {
             val apiResponse = createCall()
             result.addSource(apiResponse) { response ->
                 result.removeSource(apiResponse)
                 coroutineScope.launch {
-                    Log.d("GabrielDe", "coroutineScope launch inside launch")
                     handleNetworkResponse(response)
                 }
             }
         }
 
         GlobalScope.launch {
-            Log.d("GabrielDe", "coroutineScope launch job is not yet completed")
             delay(NETWORK_TIMEOUT)
             if (!job.isCompleted) {
-                Log.d("GabrielDe", "it should cancel it?")
                 job.cancel(CancellationException(UNABLE_TO_RESOLVE_HOST))
             }
         }

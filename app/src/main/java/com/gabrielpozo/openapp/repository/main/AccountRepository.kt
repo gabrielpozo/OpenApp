@@ -131,7 +131,6 @@ class AccountRepository @Inject constructor(
                         )
                     )
                 }
-
             }
 
             override fun createCall(): LiveData<GenericApiResponse<GenericResponse>> {
@@ -159,6 +158,58 @@ class AccountRepository @Inject constructor(
                     accountProperties.userName,
                     Constants.accountproperties_update_immediately
                 )
+            }
+
+            override fun setJob(job: Job) {
+                repositoryJob?.cancel()
+                repositoryJob = job
+            }
+
+        }.asLiveData()
+    }
+
+
+    fun updatePassword(
+        authToken: AuthToken,
+        currentPassword: String,
+        newPassword: String,
+        confirmNewPassword: String
+    ): LiveData<DataState<AccountViewState>> {
+        return object : NetworkBoundResource<GenericResponse, Any, AccountViewState>(
+            sessionManager.isConnectedToTheInternet(),
+            true, true, false
+        ) {
+            override suspend fun handleApiSuccessResponse(response: ApiSuccessResponse<GenericResponse>) {
+                withContext(Main) {
+                    onCompleteJob(
+                        DataState.data(
+                            null,
+                            Response(response.body.response, ResponseType.Toast)
+                        )
+                    )
+
+                }
+            }
+
+            override fun createCall(): LiveData<GenericApiResponse<GenericResponse>> {
+                return openMainService.updatePassword(
+                    "Token ${authToken.token}",
+                    currentPassword,
+                    newPassword,
+                    confirmNewPassword
+                )
+            }
+
+            //Not applicable
+            override suspend fun createCacheRequestAndReturn() {
+            }
+
+            //not applicable in this case
+            override fun loadFromCache(): LiveData<AccountViewState> {
+                return AbsentLiveData.create()
+            }
+
+            override suspend fun updateLocalDatabase(cacheObject: Any?) {
             }
 
             override fun setJob(job: Job) {
