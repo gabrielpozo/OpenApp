@@ -11,6 +11,7 @@ import com.gabrielpozo.openapp.ui.auth.state.AuthStateEvent.*
 import com.gabrielpozo.openapp.ui.auth.state.AuthViewState
 import com.gabrielpozo.openapp.ui.auth.state.LoginFields
 import com.gabrielpozo.openapp.ui.auth.state.RegistrationFields
+import com.gabrielpozo.openapp.util.AbsentLiveData
 import javax.inject.Inject
 
 class AuthViewModel @Inject constructor(
@@ -40,6 +41,15 @@ class AuthViewModel @Inject constructor(
 
             is CheckPreviousAuthEvent -> {
                 authRepository.checkPreviousAuthUser()
+            }
+
+            is None -> {
+                return object : LiveData<DataState<AuthViewState>>() {
+                    override fun onActive() {
+                        super.onActive()
+                        value = DataState.data(null, null)
+                    }
+                }
             }
         }
     }
@@ -77,6 +87,11 @@ class AuthViewModel @Inject constructor(
 
     fun cancelActiveJobs() {
         authRepository.cancelActiveJobs()
+        handlePendingData()
+    }
+
+    private fun handlePendingData() {
+        setStateEvent(None)
     }
 
     override fun onCleared() {

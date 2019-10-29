@@ -10,6 +10,7 @@ import com.gabrielpozo.openapp.models.AccountProperties
 import com.gabrielpozo.openapp.models.AuthToken
 import com.gabrielpozo.openapp.persistence.AccountPropertiesDao
 import com.gabrielpozo.openapp.persistence.AuthTokenDao
+import com.gabrielpozo.openapp.repository.JobManager
 import com.gabrielpozo.openapp.repository.NetworkBoundResource
 import com.gabrielpozo.openapp.session.SessionManager
 import com.gabrielpozo.openapp.ui.DataState
@@ -33,11 +34,9 @@ class AuthRepository @Inject constructor(
     val sessionManager: SessionManager,
     val sharePrefrences: SharedPreferences,
     val sharePrefrencesEditor: SharedPreferences.Editor
-) {
+) : JobManager("AuthRepository") {
 
     private val TAG: String = "Gabriel"
-    private var authRepoJob: Job? = null
-
 
     fun attemptLogin(email: String, password: String): LiveData<DataState<AuthViewState>> {
         val loginFieldErrors = LoginFields(email, password).isValidForLogin()
@@ -108,8 +107,7 @@ class AuthRepository @Inject constructor(
             }
 
             override fun setJob(job: Job) {
-                cancelActiveJobs()
-                authRepoJob = job
+                addJob("attemptLogin", job)
             }
 
             //not used in this case
@@ -200,8 +198,7 @@ class AuthRepository @Inject constructor(
             }
 
             override fun setJob(job: Job) {
-                cancelActiveJobs()
-                authRepoJob = job
+                addJob("attemptRegistration", job)
             }
 
             //not used in this case
@@ -271,8 +268,7 @@ class AuthRepository @Inject constructor(
             }
 
             override fun setJob(job: Job) {
-                cancelActiveJobs()
-                authRepoJob = job
+                addJob("checkPreviousAuthUser", job)
             }
 
             //not used in this case
@@ -291,7 +287,6 @@ class AuthRepository @Inject constructor(
             }
 
         }.asLiveData()
-
     }
 
     private fun returnNotTokenFound(): LiveData<DataState<AuthViewState>> {
@@ -304,13 +299,11 @@ class AuthRepository @Inject constructor(
                 )
             }
         }
-
     }
 
     private fun saveUserToAuthenticatedSharedPrefs(email: String) {
         sharePrefrencesEditor.putString(PreferenceKeys.PREVIOUS_AUTH_USER, email)
         sharePrefrencesEditor.apply()
-
     }
 
     private fun returnErrorResponse(
@@ -324,11 +317,5 @@ class AuthRepository @Inject constructor(
             }
         }
     }
-
-    fun cancelActiveJobs() {
-        Log.d(TAG, "Cancelling on-going jobs..")
-        authRepoJob?.cancel()
-    }
-
 }
 

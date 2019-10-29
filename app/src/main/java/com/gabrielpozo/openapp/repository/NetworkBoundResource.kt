@@ -68,7 +68,6 @@ abstract class NetworkBoundResource<ResponseObject, CacheObject, ViewStateType>(
     }
 
     private suspend fun doCacheRequest() {
-        // coroutineScope.launch {
         //fake delay for testing cache
         delay(TESTING_CACHE_DELAY)
         //View data from cache ONLY and return

@@ -37,10 +37,6 @@ abstract class BaseActivity : DaggerAppCompatActivity(), DataStateChangeListener
         }
     }
 
-    override fun finishLoadingStatus() {
-        displayProgressBar(false)
-    }
-
     private fun handleStateError(errorEvent: Event<StateError>) {
         errorEvent.getContentIfNotHandled()?.let {
             when (it.response.responseType) {
@@ -86,7 +82,6 @@ abstract class BaseActivity : DaggerAppCompatActivity(), DataStateChangeListener
                 }
             }
         }
-
     }
 
     override fun hideSoftKeyboard() {
@@ -97,7 +92,6 @@ abstract class BaseActivity : DaggerAppCompatActivity(), DataStateChangeListener
 
         }
     }
-
 
     abstract fun displayProgressBar(bool: Boolean)
 }

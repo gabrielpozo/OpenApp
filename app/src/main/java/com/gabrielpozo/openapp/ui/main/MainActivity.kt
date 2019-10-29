@@ -5,17 +5,19 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import com.gabrielpozo.openapi.R
 import com.gabrielpozo.openapp.ui.BaseActivity
 import com.gabrielpozo.openapp.ui.auth.AuthActivity
+import com.gabrielpozo.openapp.ui.main.account.BaseAccountFragment
 import com.gabrielpozo.openapp.ui.main.account.ChangePasswordFragment
 import com.gabrielpozo.openapp.ui.main.account.UpdateAccountFragment
+import com.gabrielpozo.openapp.ui.main.blog.BaseBlogFragment
 import com.gabrielpozo.openapp.ui.main.blog.UpdateBlogFragment
 import com.gabrielpozo.openapp.ui.main.blog.ViewBlogFragment
+import com.gabrielpozo.openapp.ui.main.create_blog.BaseCreateBlogFragment
 import com.gabrielpozo.openapp.util.BottomNavController
 import com.gabrielpozo.openapp.util.setUpNavigation
 import com.google.android.material.appbar.AppBarLayout
@@ -81,21 +83,10 @@ class MainActivity : BaseActivity(), BottomNavController.NavGraphProvider,
     }
 
     override fun displayProgressBar(bool: Boolean) {
-        //(progress_bar.isVisible)
         if (bool) {
             progress_bar.visibility = View.VISIBLE
         } else {
-            if (progress_bar.isVisible) {
-                progress_bar.visibility = View.INVISIBLE
-            }
-        }
-
-        if (bool) {
-            progress_bar.visibility = View.VISIBLE
-        } else {
-            if (progress_bar.isVisible) {
-                progress_bar.visibility = View.INVISIBLE
-            }
+            progress_bar.visibility = View.GONE
         }
     }
 
@@ -119,6 +110,20 @@ class MainActivity : BaseActivity(), BottomNavController.NavGraphProvider,
 
     override fun onGraphChanged() {
         expandBar()
+        cancelActiveJobs()
+    }
+
+    private fun cancelActiveJobs() {
+        bottomNavController.fragmentManager.findFragmentById(bottomNavController.containerId)
+            ?.childFragmentManager
+            ?.fragments?.forEach { fragment ->
+            when (fragment) {
+                is BaseAccountFragment -> fragment.cancelActiveJobs()
+                is BaseBlogFragment -> fragment.cancelActiveJobs()
+                is BaseCreateBlogFragment -> fragment.cancelActiveJobs()
+            }
+        }
+        displayProgressBar(false)
     }
 
     override fun onReselectNavItem(navController: NavController, fragment: Fragment) =

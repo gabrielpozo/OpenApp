@@ -6,6 +6,7 @@ import com.gabrielpozo.openapp.repository.main.AccountRepository
 import com.gabrielpozo.openapp.session.SessionManager
 import com.gabrielpozo.openapp.ui.BaseViewModel
 import com.gabrielpozo.openapp.ui.DataState
+import com.gabrielpozo.openapp.ui.auth.state.AuthStateEvent
 import com.gabrielpozo.openapp.ui.main.account.state.AccountStateEvent
 import com.gabrielpozo.openapp.ui.main.account.state.AccountStateEvent.*
 import com.gabrielpozo.openapp.ui.main.account.state.AccountViewState
@@ -50,7 +51,8 @@ class AccountViewModel @Inject constructor(
             }
 
             is None -> {
-                return AbsentLiveData.create()
+                //we set the dataState to loading = false
+                return AbsentLiveData.createCancelRequest()
             }
         }
     }
@@ -66,6 +68,21 @@ class AccountViewModel @Inject constructor(
 
     fun logout() {
         sessionManager.logout()
+    }
+
+
+    fun cancelActiveJobs() {
+        accountRepository.cancelActiveJobs()
+        handlePendingData()
+    }
+
+    fun handlePendingData() {
+        setStateEvent(None)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        cancelActiveJobs()
     }
 
 }

@@ -87,12 +87,6 @@ class AccountFragment : BaseAccountFragment() {
         return super.onOptionsItemSelected(item)
     }
 
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        stateChangeListener.finishLoadingStatus()
-    }
-
     override fun onResume() {
         super.onResume()
         viewModel.setStateEvent(AccountStateEvent.GetAccountPropertiesEvent)

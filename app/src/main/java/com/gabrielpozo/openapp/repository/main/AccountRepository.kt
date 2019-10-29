@@ -8,6 +8,7 @@ import com.gabrielpozo.openapp.api.main.OpenMainService
 import com.gabrielpozo.openapp.models.AccountProperties
 import com.gabrielpozo.openapp.models.AuthToken
 import com.gabrielpozo.openapp.persistence.AccountPropertiesDao
+import com.gabrielpozo.openapp.repository.JobManager
 import com.gabrielpozo.openapp.repository.NetworkBoundResource
 import com.gabrielpozo.openapp.session.SessionManager
 import com.gabrielpozo.openapp.ui.DataState
@@ -27,10 +28,8 @@ class AccountRepository @Inject constructor(
     val openMainService: OpenMainService,
     val accountPropertiesDao: AccountPropertiesDao,
     val sessionManager: SessionManager
-) {
+) : JobManager("AccountRepository") {
     private val TAG: String = "Gabriel"
-
-    private var repositoryJob: Job? = null
 
     fun getAccountProperties(
         authToken: AuthToken
@@ -59,8 +58,7 @@ class AccountRepository @Inject constructor(
             }
 
             override fun setJob(job: Job) {
-                repositoryJob?.cancel()
-                repositoryJob = job
+                addJob("getAccountProperties", job)
             }
 
             override fun loadFromCache(): LiveData<AccountViewState> {
@@ -161,8 +159,7 @@ class AccountRepository @Inject constructor(
             }
 
             override fun setJob(job: Job) {
-                repositoryJob?.cancel()
-                repositoryJob = job
+                addJob("saveAccountProperties", job)
             }
 
         }.asLiveData()
@@ -213,14 +210,9 @@ class AccountRepository @Inject constructor(
             }
 
             override fun setJob(job: Job) {
-                repositoryJob?.cancel()
-                repositoryJob = job
+                addJob("updatePassword", job)
             }
 
         }.asLiveData()
-    }
-
-    fun cancelActiveJobs() {
-        Log.d(TAG, "AuthRepository: cancelling on-going jobs...")
     }
 }

@@ -11,7 +11,7 @@ import com.gabrielpozo.openapi.R
 import com.gabrielpozo.openapp.ui.DataStateChangeListener
 import dagger.android.support.DaggerFragment
 
-abstract class BaseCreateBlogFragment : DaggerFragment(){
+abstract class BaseCreateBlogFragment : DaggerFragment() {
 
     val TAG: String = "AppDebug"
 
@@ -24,6 +24,12 @@ abstract class BaseCreateBlogFragment : DaggerFragment(){
             findNavController(),
             appBarConfiguration
         )
+
+        cancelActiveJobs()
+    }
+
+    fun cancelActiveJobs() {
+        //  viewModel.cancelActiveJobs()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -33,9 +39,9 @@ abstract class BaseCreateBlogFragment : DaggerFragment(){
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        try{
+        try {
             stateChangeListener = context as DataStateChangeListener
-        }catch(e: ClassCastException){
+        } catch (e: ClassCastException) {
 
         }
     }

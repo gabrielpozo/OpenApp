@@ -15,13 +15,17 @@ abstract class BaseAuthFragment : DaggerFragment() {
 
     lateinit var viewModel: AuthViewModel
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel = activity?.run {
             ViewModelProvider(this, viewModelProviderFactory).get(AuthViewModel::class.java)
         } ?: throw Exception("Invalid Activity")
+
+        cancelActiveJobs()
     }
 
+    private fun cancelActiveJobs() {
+        viewModel.cancelActiveJobs()
+    }
 }
