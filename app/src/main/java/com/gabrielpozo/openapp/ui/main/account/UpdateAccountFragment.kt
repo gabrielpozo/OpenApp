@@ -46,7 +46,7 @@ class UpdateAccountFragment : BaseAccountFragment() {
         viewModel.viewState.observe(viewLifecycleOwner, Observer { accountViewState ->
             if (accountViewState != null) {
                 accountViewState.accountProperties?.let { accountProperties ->
-                    Log.d("Gabriel", "UpdateAccountFragment, ViewState $accountProperties")
+                    Log.d("Gabriel", "UpdateAccountFragment, BlogViewState $accountProperties")
                     setAccountDataFields(accountProperties)
                 }
             }

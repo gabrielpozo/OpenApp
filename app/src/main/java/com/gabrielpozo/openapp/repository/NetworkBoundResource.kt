@@ -64,7 +64,6 @@ abstract class NetworkBoundResource<ResponseObject, CacheObject, ViewStateType>(
                 }
             }
         }
-
     }
 
     private suspend fun doCacheRequest() {

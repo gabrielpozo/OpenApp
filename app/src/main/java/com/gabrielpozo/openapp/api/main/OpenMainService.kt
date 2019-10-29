@@ -2,6 +2,7 @@ package com.gabrielpozo.openapp.api.main
 
 import androidx.lifecycle.LiveData
 import com.gabrielpozo.openapp.api.GenericResponse
+import com.gabrielpozo.openapp.api.main.responses.BlogListSearchResponse
 import com.gabrielpozo.openapp.models.AccountProperties
 import com.gabrielpozo.openapp.models.AuthToken
 import com.gabrielpozo.openapp.util.GenericApiResponse
@@ -29,4 +30,11 @@ interface OpenMainService {
         @Field("new_password") newPassword: String,
         @Field("confirm_new_password") confirmNewPassword: String
     ): LiveData<GenericApiResponse<GenericResponse>>
+
+
+    @GET("blog/list")
+    fun searchListBlogPosts(
+        @Header("Authorization") authorization: String,
+        @Query("search") query: String
+    ): LiveData<GenericApiResponse<BlogListSearchResponse>>
 }

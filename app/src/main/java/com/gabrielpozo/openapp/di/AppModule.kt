@@ -88,7 +88,7 @@ class AppModule {
 
     @Singleton
     @Provides
-    fun provideSharePreferncesEditor(sharedPreferences: SharedPreferences): SharedPreferences.Editor {
+    fun provideSharePreferencesEditor(sharedPreferences: SharedPreferences): SharedPreferences.Editor {
         return sharedPreferences.edit()
     }
 }

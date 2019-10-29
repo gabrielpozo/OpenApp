@@ -1,6 +1,5 @@
 package com.gabrielpozo.openapp.repository.main
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.switchMap
 import com.gabrielpozo.openapp.api.GenericResponse

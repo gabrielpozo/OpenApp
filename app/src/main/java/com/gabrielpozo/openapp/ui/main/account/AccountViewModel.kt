@@ -84,5 +84,4 @@ class AccountViewModel @Inject constructor(
         super.onCleared()
         cancelActiveJobs()
     }
-
 }
