@@ -2,6 +2,7 @@ package com.gabrielpozo.openapp.repository.main
 
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
 import com.gabrielpozo.openapp.api.main.OpenMainService
 import com.gabrielpozo.openapp.api.main.responses.BlogListSearchResponse
@@ -76,17 +77,11 @@ class BlogRepository @Inject constructor(
             }
 
             override fun loadFromCache(): LiveData<BlogViewState> {
-                return blogPostDao.getAllBLogPosts()
-                    .switchMap { blogPosts ->
-                        object : LiveData<BlogViewState>() {
-                            override fun onActive() {
-                                super.onActive()
-                                value =
-                                    BlogViewState(BlogViewState.BlogFields(blogList = blogPosts))
-
-                            }
-                        }
+                return blogPostDao.getAllBLogPosts().switchMap {blogPosts ->
+                    liveData {
+                        emit(BlogViewState(BlogViewState.BlogFields(blogList = blogPosts)))
                     }
+                }
             }
 
             override suspend fun updateLocalDatabase(cacheObject: List<BlogPost>?) {

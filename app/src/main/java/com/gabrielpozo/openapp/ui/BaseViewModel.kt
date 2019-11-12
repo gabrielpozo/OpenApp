@@ -1,9 +1,6 @@
 package com.gabrielpozo.openapp.ui
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 
 abstract class BaseViewModel<StateEvent, ViewState> : ViewModel() {
 
@@ -13,12 +10,11 @@ abstract class BaseViewModel<StateEvent, ViewState> : ViewModel() {
     val viewState: LiveData<ViewState>
         get() = _viewState
 
-    val dataState: LiveData<DataState<ViewState>> =
-        Transformations.switchMap(_stateEvent) { stateEvent ->
-            stateEvent?.let {
-                handleStateEvent(stateEvent)
-            }
-        }
+
+
+    val dataState: LiveData<DataState<ViewState>> = _stateEvent.switchMap { stateEvent ->
+        handleStateEvent(stateEvent)
+    }
 
 
     fun setStateEvent(event: StateEvent) {
