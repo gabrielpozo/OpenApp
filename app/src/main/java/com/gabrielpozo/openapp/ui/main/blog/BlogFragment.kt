@@ -9,17 +9,13 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.RequestManager
 import com.gabrielpozo.openapi.R
 import com.gabrielpozo.openapp.models.BlogPost
 import com.gabrielpozo.openapp.ui.main.blog.state.BlogStateEvent
 import com.gabrielpozo.openapp.util.TopSpacingItemDecoration
 import kotlinx.android.synthetic.main.fragment_blog.*
-import javax.inject.Inject
 
 class BlogFragment : BaseBlogFragment(), BlogListAdapter.Interaction {
-    @Inject
-    lateinit var requestManager: RequestManager
 
     private lateinit var recyclerAdapter: BlogListAdapter
 
@@ -109,7 +105,8 @@ class BlogFragment : BaseBlogFragment(), BlogListAdapter.Interaction {
     }
 
     override fun onItemSelected(position: Int, item: BlogPost) {
-        Log.d(TAG, "on Itemselected: position, BlogPost: $position, $item")
+        viewModel.setBlogPost(item)
+        findNavController().navigate(R.id.action_blogFragment_to_viewBlogFragment)
     }
 
 
