@@ -1,11 +1,13 @@
 package com.gabrielpozo.openapp.ui.auth
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.liveData
 import com.gabrielpozo.openapp.models.AuthToken
 import com.gabrielpozo.openapp.repository.auth.AuthRepository
 import com.gabrielpozo.openapp.session.SessionManager
 import com.gabrielpozo.openapp.ui.BaseViewModel
 import com.gabrielpozo.openapp.ui.DataState
+import com.gabrielpozo.openapp.ui.Loading
 import com.gabrielpozo.openapp.ui.auth.state.AuthStateEvent
 import com.gabrielpozo.openapp.ui.auth.state.AuthStateEvent.*
 import com.gabrielpozo.openapp.ui.auth.state.AuthViewState
@@ -44,12 +46,7 @@ class AuthViewModel @Inject constructor(
             }
 
             is None -> {
-                return object : LiveData<DataState<AuthViewState>>() {
-                    override fun onActive() {
-                        super.onActive()
-                        value = DataState.data(null, null)
-                    }
-                }
+                AbsentLiveData.createCancelRequest()
             }
         }
     }

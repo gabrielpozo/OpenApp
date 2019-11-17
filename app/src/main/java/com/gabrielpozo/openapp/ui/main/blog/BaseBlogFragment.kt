@@ -12,6 +12,7 @@ import androidx.navigation.ui.NavigationUI
 import com.bumptech.glide.RequestManager
 import com.gabrielpozo.openapi.R
 import com.gabrielpozo.openapp.ui.DataStateChangeListener
+import com.gabrielpozo.openapp.ui.main.blog.viewmodel.BlogViewModel
 import com.gabrielpozo.openapp.viewmodels.ViewModelProviderFactory
 import dagger.android.support.DaggerFragment
 import javax.inject.Inject

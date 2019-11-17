@@ -1,5 +1,6 @@
 package com.gabrielpozo.openapp.ui.main.blog
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -118,9 +119,10 @@ class BlogListAdapter(
 
     override fun getItemViewType(position: Int): Int {
         if (differ.currentList[position].pk > -1) {
+
             return BLOG_ITEM
         }
-        return differ.currentList[position].pk // -1
+        return NO_MORE_RESULT // -1
     }
 
     fun submitList(list: List<BlogPost>, isQueryExhausted: Boolean) {
@@ -128,7 +130,7 @@ class BlogListAdapter(
         if (isQueryExhausted) {
             newList.add(NO_MORE_RESULTS_BLOG_MARKER)
         }
-        differ.submitList(list)
+        differ.submitList(newList)
     }
 
     class BlogViewHolder

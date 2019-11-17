@@ -1,14 +1,16 @@
-package com.gabrielpozo.openapp.ui.main.blog
+package com.gabrielpozo.openapp.ui.main.blog.viewmodel
 
 import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.liveData
 import com.bumptech.glide.RequestManager
 import com.gabrielpozo.openapp.models.BlogPost
 import com.gabrielpozo.openapp.repository.main.BlogRepository
 import com.gabrielpozo.openapp.session.SessionManager
 import com.gabrielpozo.openapp.ui.BaseViewModel
 import com.gabrielpozo.openapp.ui.DataState
+import com.gabrielpozo.openapp.ui.Loading
 import com.gabrielpozo.openapp.ui.main.blog.state.BlogStateEvent
 import com.gabrielpozo.openapp.ui.main.blog.state.BlogStateEvent.*
 import com.gabrielpozo.openapp.ui.main.blog.state.BlogViewState
@@ -31,7 +33,11 @@ class BlogViewModel @Inject constructor(
         return when (stateEvent) {
             is BlogSearchEvent -> {
                 sessionManager.cachedToken.value?.let { authToken ->
-                    blogRepository.searchBlogPosts(authToken, stateEvent.query)
+                    blogRepository.searchBlogPosts(
+                        authToken,
+                        getSearchQuery(),
+                        getPage()
+                    )
                 } ?: AbsentLiveData.create()
             }
 
@@ -40,43 +46,10 @@ class BlogViewModel @Inject constructor(
             }
 
             is None -> {
-                AbsentLiveData.create()
+                AbsentLiveData.createCancelRequest()
             }
         }
     }
-
-
-    fun setQuery(query: String) {
-        val update = getCurrentNewStateOrNew()
-        if (query == update.blogFields.searchQuery) {
-            return
-        }
-        update.blogFields.searchQuery = query
-        _viewState.value = update
-    }
-
-    fun setBlogListData(blogList: List<BlogPost>) {
-        val update = getCurrentNewStateOrNew()
-        //setting a new identical bloglist, will make not difference
-        update.blogFields.blogList = blogList
-        _viewState.value = update
-    }
-
-    fun setBlogPost(blogPost: BlogPost) {
-        val update = getCurrentNewStateOrNew()
-        //setting a new identical bloglist, will make not difference
-        update.viewBLogFields.blogPost = blogPost
-        _viewState.value = update
-    }
-
-
-    fun setIsAuthorOfTheBlogPost(isAuthor: Boolean) {
-        val update = getCurrentNewStateOrNew()
-        //setting a new identical bloglist, will make not difference
-        update.viewBLogFields.isAuthorOfTheBlogPost = isAuthor
-        _viewState.value = update
-    }
-
 
     fun cancelActiveJobs() {
         blogRepository.cancelActiveJobs()

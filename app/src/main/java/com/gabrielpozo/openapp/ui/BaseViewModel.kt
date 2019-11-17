@@ -27,6 +27,10 @@ abstract class BaseViewModel<StateEvent, ViewState> : ViewModel() {
         } ?: initViewState()
     }
 
+    fun setViewState(viewState: ViewState){
+        _viewState.value = viewState
+    }
+
     abstract fun initViewState(): ViewState
 
     abstract fun handleStateEvent(stateEvent: StateEvent): LiveData<DataState<ViewState>>

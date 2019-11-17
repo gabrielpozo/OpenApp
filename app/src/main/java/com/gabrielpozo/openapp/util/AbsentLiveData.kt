@@ -1,7 +1,9 @@
 package com.gabrielpozo.openapp.util
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.liveData
 import com.gabrielpozo.openapp.ui.DataState
+import com.gabrielpozo.openapp.ui.Loading
 
 /**
  * A LiveData class that has `null` value.
@@ -19,11 +21,8 @@ class AbsentLiveData<T : Any?> private constructor() : LiveData<T>() {
         }
 
         fun <T> createCancelRequest(): LiveData<DataState<T>> {
-           return object : LiveData<DataState<T>>() {
-                override fun onActive() {
-                    super.onActive()
-                    value =  DataState.loading(loading = false)
-                }
+            return liveData {
+                emit(DataState(null, Loading(false), null))
             }
         }
     }

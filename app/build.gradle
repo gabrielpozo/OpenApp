@@ -21,8 +21,8 @@ android {
                         "room.incremental"   : "true"]
             }
         }
-
     }
+
     buildTypes {
         release {
             minifyEnabled false

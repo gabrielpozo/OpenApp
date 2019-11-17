@@ -15,6 +15,7 @@ import com.gabrielpozo.openapp.session.SessionManager
 import com.gabrielpozo.openapp.ui.DataState
 import com.gabrielpozo.openapp.ui.main.blog.state.BlogViewState
 import com.gabrielpozo.openapp.util.ApiSuccessResponse
+import com.gabrielpozo.openapp.util.Constants.Companion.PAGINATION_PAGE_SIZE
 import com.gabrielpozo.openapp.util.DateUtils
 import com.gabrielpozo.openapp.util.GenericApiResponse
 import kotlinx.coroutines.Dispatchers.IO
@@ -32,7 +33,11 @@ class BlogRepository @Inject constructor(
 ) : JobManager("BlogRepository") {
     private val TAG: String = "Gabriel"
 
-    fun searchBlogPosts(authToken: AuthToken, query: String): LiveData<DataState<BlogViewState>> {
+    fun searchBlogPosts(
+        authToken: AuthToken,
+        query: String,
+        page: Int
+    ): LiveData<DataState<BlogViewState>> {
         return object :
             NetworkBoundResource<BlogListSearchResponse, List<BlogPost>, BlogViewState>(
                 sessionManager.isConnectedToTheInternet(),
@@ -63,25 +68,40 @@ class BlogRepository @Inject constructor(
             }
 
             override fun createCall(): LiveData<GenericApiResponse<BlogListSearchResponse>> {
-                return openMainService.searchListBlogPosts("Token ${authToken.token!!}", query)
+                return openMainService.searchListBlogPosts(
+                    "Token ${authToken.token!!}",
+                    query,
+                    page = page
+                )
             }
 
             override suspend fun createCacheRequestAndReturn() {
                 withContext(Main) {
-                    //finish by viewing the db cache
+                    //finishing by viewing the db cache
                     result.addSource(loadFromCache()) { viewState ->
+                        viewState.blogFields.isQueryInProgress = false
+                        if ((page * PAGINATION_PAGE_SIZE) > viewState.blogFields.blogList.size) {
+                            viewState.blogFields.isQueryExhausted = true
+                        }
                         onCompleteJob(DataState.data(viewState, null))
                     }
                 }
-
             }
 
             override fun loadFromCache(): LiveData<BlogViewState> {
-                return blogPostDao.getAllBLogPosts().switchMap {blogPosts ->
-                    liveData {
-                        emit(BlogViewState(BlogViewState.BlogFields(blogList = blogPosts)))
+                return blogPostDao.getAllBlogPosts(query = query, page = page)
+                    .switchMap { blogPosts ->
+                        liveData {
+                            emit(
+                                BlogViewState(
+                                    BlogViewState.BlogFields(
+                                        blogList = blogPosts,
+                                        isQueryInProgress = true
+                                    )
+                                )
+                            )
+                        }
                     }
-                }
             }
 
             override suspend fun updateLocalDatabase(cacheObject: List<BlogPost>?) {

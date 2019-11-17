@@ -15,6 +15,7 @@ import com.gabrielpozo.openapp.ui.main.account.BaseAccountFragment
 import com.gabrielpozo.openapp.ui.main.account.ChangePasswordFragment
 import com.gabrielpozo.openapp.ui.main.account.UpdateAccountFragment
 import com.gabrielpozo.openapp.ui.main.blog.BaseBlogFragment
+import com.gabrielpozo.openapp.ui.main.blog.BlogFragment
 import com.gabrielpozo.openapp.ui.main.blog.UpdateBlogFragment
 import com.gabrielpozo.openapp.ui.main.blog.ViewBlogFragment
 import com.gabrielpozo.openapp.ui.main.create_blog.BaseCreateBlogFragment
@@ -44,9 +45,9 @@ class MainActivity : BaseActivity(), BottomNavController.NavGraphProvider,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        tool_bar.setOnClickListener {
+      /*  tool_bar.setOnClickListener {
             sessionManager.logout()
-        }
+        }*/
         bottomNavigationView = findViewById(R.id.bottom_navigation_view)
         bottomNavigationView.setUpNavigation(bottomNavController, this)
         if (savedInstanceState == null) {
@@ -140,6 +141,13 @@ class MainActivity : BaseActivity(), BottomNavController.NavGraphProvider,
             is ChangePasswordFragment -> {
                 navController.navigate(R.id.action_changePasswordFragment_to_home)
             }
+
+            is BlogFragment -> {
+                //create the scrolling up movement
+                //important to set to private those variables that are not going to be use outside the class
+                fragment.resetUI()
+            }
+
             else -> {
                 //do nothing
             }
